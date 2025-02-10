@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/git.dir/src/Server.cpp.o -o git  -lz 

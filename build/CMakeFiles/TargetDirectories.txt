@@ -1,0 +1,3 @@
+/home/harshad/Projects/git/build/CMakeFiles/git.dir
+/home/harshad/Projects/git/build/CMakeFiles/edit_cache.dir
+/home/harshad/Projects/git/build/CMakeFiles/rebuild_cache.dir
