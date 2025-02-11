@@ -92,6 +92,8 @@ git_EXTERNAL_OBJECTS =
 
 git: CMakeFiles/git.dir/src/Server.cpp.o
 git: CMakeFiles/git.dir/build.make
+git: /usr/lib/x86_64-linux-gnu/libcrypto.so
+git: /usr/lib/x86_64-linux-gnu/libz.so
 git: CMakeFiles/git.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/harshad/Projects/git/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable git"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/git.dir/link.txt --verbose=$(VERBOSE)
