@@ -5,51 +5,58 @@
 #include <zlib.h>
 #include <openssl/sha.h>
 
-//bool decompressData(std::vector<char>& compressedData, std::vector<char> &decmp) {
-//    // Initialize zlib structures
-//    z_stream stream{};
-//    stream.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(compressedData.data()));
-//    stream.avail_in = compressedData.size();
-//
-//    // Allocate a buffer for decompression
-//    constexpr size_t bufferSize = 4096; // 4 KB buffer
-//    std::vector<char> buffer(bufferSize);
-//    std::string decompressedData;
-//
-//    // Initialize zlib for inflation
-//    if (inflateInit(&stream) != Z_OK) {
-//        throw std::runtime_error("Failed to initialize zlib");
-//    }
-//
-//    try {
-//        // Decompress in chunks
-//        int ret;
-//        do {
-//            stream.next_out = reinterpret_cast<Bytef*>(buffer.data());
-//            stream.avail_out = buffer.size();
-//            ret = inflate(&stream, Z_NO_FLUSH);
-//            if (ret != Z_OK && ret != Z_STREAM_END) {
-//                inflateEnd(&stream);
-//                throw std::runtime_error("Zlib decompression error");
-//            }
-//
-//            decompressedData.append(buffer.data(), buffer.size() - stream.avail_out);
-//        } while (ret != Z_STREAM_END);
-//
-//        // Clean up
-//        inflateEnd(&stream);
-//    } catch (...) {
-//        inflateEnd(&stream);
-//        throw;
-//    }
-//    int j=0;
-//    uLong siz = decompressedData.size();
-//    decmp.resize(siz);
-//    for(auto i: decompressedData)
-//    {
-//        decmp[j++] = i;
-//    }return true;
-//}
+// This function is generated using chatGPT.
+
+/*
+bool decompressData(std::vector<char>& compressedData, std::vector<char> &decmp) {
+    // Initialize zlib structures
+    z_stream stream{};
+    stream.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(compressedData.data()));
+    stream.avail_in = compressedData.size();
+
+    // Allocate a buffer for decompression
+    constexpr size_t bufferSize = 4096; // 4 KB buffer
+    std::vector<char> buffer(bufferSize);
+    std::string decompressedData;
+
+    // Initialize zlib for inflation
+    if (inflateInit(&stream) != Z_OK) {
+        throw std::runtime_error("Failed to initialize zlib");
+    }
+
+    try {
+        // Decompress in chunks
+        int ret;
+        do {
+            stream.next_out = reinterpret_cast<Bytef*>(buffer.data());
+            stream.avail_out = buffer.size();
+            ret = inflate(&stream, Z_NO_FLUSH);
+            if (ret != Z_OK && ret != Z_STREAM_END) {
+                inflateEnd(&stream);
+                throw std::runtime_error("Zlib decompression error");
+            }
+
+            decompressedData.append(buffer.data(), buffer.size() - stream.avail_out);
+        } while (ret != Z_STREAM_END);
+
+        // Clean up
+        inflateEnd(&stream);
+    } catch (...) {
+        inflateEnd(&stream);
+        throw;
+    }
+    int j=0;
+    uLong siz = decompressedData.size();
+    decmp.resize(siz);
+    for(auto i: decompressedData)
+    {
+        decmp[j++] = i;
+    }return true;
+}
+*/
+
+// Below function is working fine for now, if there seems to be any error
+// we can use the above function
 
 bool decompressData(std::vector<char> &compressed, std::vector<char> &decompressed)
 {
