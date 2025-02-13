@@ -9,7 +9,7 @@
 
 void printOutput(std::string &flag, std::string &mode, std::string &type, std::string &data, std::string &siz, std::string &name)
 {
-    if(flag == "")
+    if(flag == "" or flag=="-r")
     {
         std::cout<<mode<<" "<<type<<" "<<data<<"    "<<name<<"\n";
     }
@@ -20,24 +20,8 @@ void printOutput(std::string &flag, std::string &mode, std::string &type, std::s
     }
 }
 
-bool lsTree(int argc, char* argv[])
+void extractHash(std::string hash, std::string flag)
 {
-    if (argc < 3)
-    {
-        std::cerr << "Invalid arguments, required a flag and blob-sha.\n";
-        return EXIT_FAILURE;
-    }
-    std::string flag = argv[2];
-    std::string hash;
-    if (argc == 4)
-    {
-        hash = argv[3];
-    }
-    else
-    {
-        hash = flag;
-        flag = "";
-    }
     std::string fileData = getFileData(hash);
     int nullDelimiter = fileData.find('\0');
     std::string header = fileData.substr(0, nullDelimiter);
@@ -45,7 +29,7 @@ bool lsTree(int argc, char* argv[])
     if(header.find("tree")==-1)
     {
         std::cout<<"Not a tree\n";
-        return 0;
+        return;
     }
     std::istringstream iss(data);
     while(iss)
@@ -67,9 +51,38 @@ bool lsTree(int argc, char* argv[])
             header = objectData.substr(0, nullDelimiter);
             int spaceDelimiter = header.find(' ');
             std::string type = header.substr(0, spaceDelimiter);
-            std::string objectSize = header.substr(spaceDelimiter);
-            printOutput(flag, mode, type, hexData, objectSize, name);
+            if(type=="tree" and flag == "-r")
+            {
+                extractHash(hexData, flag);
+            }
+            else
+            {
+                std::string objectSize = header.substr(spaceDelimiter);
+                printOutput(flag, mode, type, hexData, objectSize, name);
+            }
         }
     } 
+ 
+}
+
+bool lsTree(int argc, char* argv[])
+{
+    if (argc < 3)
+    {
+        std::cerr << "Invalid arguments, required a flag and blob-sha.\n";
+        return EXIT_FAILURE;
+    }
+    std::string flag = argv[2];
+    std::string hash;
+    if (argc == 4)
+    {
+        hash = argv[3];
+    }
+    else
+    {
+        hash = flag;
+        flag = "";
+    }
+    extractHash(hash, flag);    
     return 0;
 }

@@ -14,7 +14,7 @@ std::string getFileData(std::string value)
     std::string file = value.substr(2);
     std::filesystem::path currentFolder = std::filesystem::current_path();
     std::filesystem::path filePath = currentFolder / ".git/objects/" / folder / file;
-    auto commitFile = std::ifstream(filePath);
+    auto commitFile = std::ifstream(filePath, std::ios::binary);
     if (!commitFile.is_open())
     {
         throw("fatal: Not a valid object name " + folder + file);
