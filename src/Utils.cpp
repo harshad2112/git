@@ -49,3 +49,13 @@ std::string computeSHA(const std::string &input)
     }
     return ss.str();
 }
+
+std::string computeHex(const unsigned char *input)
+{
+    std::ostringstream ss;
+    for (int i=0; i<20; i++)
+    {
+        ss << std::hex << std::setw(2) << std::setfill('0') << (static_cast<int>(input[i]));
+    }
+    return ss.str();
+}

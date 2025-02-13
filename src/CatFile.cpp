@@ -1,4 +1,5 @@
 #include <string>
+#include <string>
 #include <iostream>
 #include <filesystem>
 #include <fstream>
@@ -6,6 +7,33 @@
 
 #include "../include/CatFile.hpp"
 #include "../include/Utils.hpp"
+
+std::string getFileData(std::string value)
+{
+    std::string folder = value.substr(0, 2);
+    std::string file = value.substr(2);
+    std::filesystem::path currentFolder = std::filesystem::current_path();
+    std::filesystem::path filePath = currentFolder / ".git/objects/" / folder / file;
+    auto commitFile = std::ifstream(filePath);
+    if (!commitFile.is_open())
+    {
+        throw("fatal: Not a valid object name " + folder + file);
+        return "";
+    }
+    std::vector<char> compressed((std::istreambuf_iterator<char>(commitFile)), {});
+    commitFile.close();
+
+    std::vector<char> decompressed;
+    if (decompressData(compressed, decompressed))
+    {
+        std::string data(decompressed.begin(), decompressed.end());
+        return data;
+    }
+    else
+    {
+        throw("fatal: Not a valid object name " + folder + file);
+    }
+}
 
 bool catFile(int argc, char *argv[])
 {
@@ -18,31 +46,9 @@ bool catFile(int argc, char *argv[])
     std::string value = argv[3];
     if (flag == "-p")
     {
-        std::string folder = value.substr(0, 2);
-        std::string file = value.substr(2);
-        std::filesystem::path currentFolder = std::filesystem::current_path();
-        std::filesystem::path filePath = currentFolder / ".git/objects/" / folder / file;
-        auto commitFile = std::ifstream(filePath);
-        if (!commitFile.is_open())
-        {
-            std::cerr << "fatal: Not a valid object name " << folder << file << "\n";
-            return EXIT_FAILURE;
-        }
-        std::vector<char> compressed((std::istreambuf_iterator<char>(commitFile)), {});
-        commitFile.close();
-
-        std::vector<char> decompressed;
-        if (decompressData(compressed, decompressed))
-        {
-            std::string data(decompressed.begin(), decompressed.end());
-            int delimiterPos = data.find('\0');
-            std::cout << data.substr(delimiterPos + 1);
-        }
-        else
-        {
-            std::cerr << "fatal: Not a valid object name " << folder << file << "\n";
-            return EXIT_FAILURE;
-        }
+        std::string commitData = getFileData(value); 
+        int delimiter = commitData.find('\0'); 
+        std::cout<<commitData.substr(delimiter)<<"\n";
     }
     return 0;
 }
