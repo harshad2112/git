@@ -12,3 +12,11 @@ Git-cpp currently supports these commands:
  - write-tree
 
 ## Usage
+- `./git init` -> This command will initialize a git repo.
+  * create a `.git`, `.git/objects`, `.git/refs` folders.
+  * Create a `.git/HEAD` file, to keep track of the head.
+- `./git cat-file -p`
+- `./git hash-object` ->
+- `./git ls-tree` -> 
+- `./git ls-files` ->
+- `./git write-tree` ->
