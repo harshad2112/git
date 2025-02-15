@@ -33,14 +33,14 @@ std::string writeObject(std::string type, std::string &data, bool write)
             auto commitFile = std::ofstream(filePath);
             if (!commitFile.is_open())
             {
-                throw("fatal: Not able to write to file " + folder + file);
+                throw std::runtime_error("fatal: Not able to write to file " + folder + file);
             }
             commitFile << data;
             commitFile.close();
         }
         else
         {
-            throw("fatal: Not a valid object name");
+            throw std::runtime_error("fatal: Not a valid object name");
         }
     }
     return shaString;
@@ -51,13 +51,13 @@ std::vector<IndexEntry> readGitIndex(const std::string &indexPath)
     std::ifstream indexFile(indexPath, std::ios::binary);
     if(!indexFile.is_open())
     {
-        throw("fatal: unable to open index file");
+        throw std::runtime_error("fatal: unable to open index file");
     }        
     char signature[4];
     indexFile.read(signature, 4);
     if(std::strncmp(signature, "DIRC", 4) != 0)
     {
-        throw("fatal: Invalid git index file");
+        throw std::runtime_error("fatal: Invalid git index file");
     }
     
     uint32_t version, entryCount;
@@ -130,7 +130,7 @@ std::string getFileData(std::string value)
     auto commitFile = std::ifstream(filePath, std::ios::binary);
     if (!commitFile.is_open())
     {
-        throw("fatal: Not a valid object name " + folder + file);
+        throw std::runtime_error("fatal: Not a valid object name " + folder + file);
         return "";
     }
     std::vector<char> compressed((std::istreambuf_iterator<char>(commitFile)), {});
@@ -144,7 +144,7 @@ std::string getFileData(std::string value)
     }
     else
     {
-        throw("fatal: Not a valid object name " + folder + file);
+        throw std::runtime_error("fatal: Not a valid object name " + folder + file);
     }
 }
 
