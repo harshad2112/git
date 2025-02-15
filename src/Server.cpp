@@ -8,7 +8,7 @@
 #include "../include/HashObject.hpp"
 #include "../include/CatFile.hpp"
 #include "../include/LsTree.hpp"
-
+#include "../include/LsFiles.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -42,6 +42,10 @@ int main(int argc, char *argv[])
         {
     	    lsTree(argc, argv);
         } 
+        else if(command == "ls-files")
+        {
+            lsFiles(argc, argv);
+        }
         else
         {
             std::cerr << "Unknown command " << command << '\n';
