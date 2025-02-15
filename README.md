@@ -9,5 +9,6 @@ Git-cpp currently supports these commands:
  - hash-object
  - ls-tree
  - ls-files
+ - write-tree
 
 ## Usage
