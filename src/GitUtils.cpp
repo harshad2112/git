@@ -33,6 +33,8 @@ std::string writeObject(std::string type, std::string &data, bool write)
             auto commitFile = std::ofstream(filePath);
             if (!commitFile.is_open())
             {
+                if(errno == EACCES)
+                    return shaString;
                 throw std::runtime_error("fatal: Not able to write to file " + folder + file);
             }
             commitFile << data;
