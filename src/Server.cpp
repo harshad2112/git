@@ -9,6 +9,7 @@
 #include "../include/CatFile.hpp"
 #include "../include/LsTree.hpp"
 #include "../include/LsFiles.hpp"
+#include "../include/WriteTree.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -45,6 +46,10 @@ int main(int argc, char *argv[])
         else if(command == "ls-files")
         {
             lsFiles(argc, argv);
+        }
+        else if(command == "write-tree")
+        {
+            writeTree(argc, argv);
         }
         else
         {

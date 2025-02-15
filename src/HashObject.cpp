@@ -37,39 +37,9 @@ bool hashObject(int argc, char *argv[])
     commitFile.close();
 
     std::string fileData(decompressed.begin(), decompressed.end());
-    std::string dataToCompress = "blob " + std::to_string(fileData.size()) + '\0' + fileData;
-    std::string shaString = computeSHA(dataToCompress);
-    std::cout << shaString << "\n";
+    
+    std::string type = "blob";
+    std::cout<<writeObject(type, fileData, flag=="-w")<<'\n'; 
 
-    if (flag == "-w")
-    {
-        std::vector<char> compressed;
-        std::vector<char> input(dataToCompress.begin(), dataToCompress.end());
-        if (compressData(input, compressed))
-        {
-            std::string data(compressed.begin(), compressed.end());
-            std::string folder = shaString.substr(0, 2);
-            std::string file = shaString.substr(2);
-            std::filesystem::path folderPath = currentFolder / ".git/objects/" / folder;
-            if (!std::filesystem::exists(folderPath))
-            {
-                std::filesystem::create_directories(folderPath);
-            }
-            filePath = currentFolder / ".git/objects/" / folder / file;
-            auto commitFile = std::ofstream(filePath);
-            if (!commitFile.is_open())
-            {
-                std::cerr << "fatal: Not able to write to file " << folder << file << "\n";
-                return EXIT_FAILURE;
-            }
-            commitFile << data;
-            commitFile.close();
-        }
-        else
-        {
-            std::cerr << "fatal: Not a valid object name " << file << "\n";
-            return EXIT_FAILURE;
-        }
-    }
     return 0;
 }

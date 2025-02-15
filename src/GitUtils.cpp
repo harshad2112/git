@@ -4,19 +4,46 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-
+#include <filesystem>
 
 #include "../include/GitUtils.hpp"
 #include "../include/IndexEntry.hpp"
 #include "../include/Utils.hpp"
 
-std::string cleanPath(std::string path)
+std::string writeObject(std::string type, std::string &data, bool write)
 {
-    size_t start = path.find_first_not_of(" \n\r\t");
-    if(start == std::string::npos)
-        return "";
-    size_t end = path.find_last_not_of("     \n\r\t");
-    return path.substr(start, end - start + 1);
+    std::string dataToCompress = type + " " + std::to_string(data.size()) + '\0' + data;
+    std::string shaString = computeSHA(dataToCompress);
+    if (write)
+    {
+        std::vector<char> compressed;
+        std::vector<char> input(dataToCompress.begin(), dataToCompress.end());
+        if (compressData(input, compressed))
+        {
+            std::string data(compressed.begin(), compressed.end());
+            std::string folder = shaString.substr(0, 2);
+            std::string file = shaString.substr(2);
+            std::filesystem::path currentFolder = std::filesystem::current_path();
+            std::filesystem::path folderPath = currentFolder / ".git/objects/" / folder;
+            if (!std::filesystem::exists(folderPath))
+            {
+                std::filesystem::create_directories(folderPath);
+            }
+            std::filesystem::path filePath = currentFolder / ".git/objects/" / folder / file;
+            auto commitFile = std::ofstream(filePath);
+            if (!commitFile.is_open())
+            {
+                throw("fatal: Not able to write to file " + folder + file);
+            }
+            commitFile << data;
+            commitFile.close();
+        }
+        else
+        {
+            throw("fatal: Not a valid object name");
+        }
+    }
+    return shaString;
 }
 
 std::vector<IndexEntry> readGitIndex(const std::string &indexPath)
@@ -80,3 +107,89 @@ std::vector<IndexEntry> readGitIndex(const std::string &indexPath)
     }
     return indexEntries;
 } 
+
+void printTreeOutput(std::string &flag, std::string &mode, std::string &type, std::string &data, std::string &siz, std::string &name)
+{
+    if(flag == "" or flag=="-r")
+    {
+        std::cout<<mode<<" "<<type<<" "<<data<<"    "<<name<<"\n";
+    }
+    else if(flag == "-l")
+    {
+        siz = std::string(58 - (siz.size() + mode.size() + type.size() + data.size()), ' ') + siz;
+        std::cout<<mode<<" "<<type<<" "<<data<<" "<<siz<<"    "<<name<<"\n"; 
+    }
+}
+
+std::string getFileData(std::string value)
+{
+    std::string folder = value.substr(0, 2);
+    std::string file = value.substr(2);
+    std::filesystem::path currentFolder = std::filesystem::current_path();
+    std::filesystem::path filePath = currentFolder / ".git/objects/" / folder / file;
+    auto commitFile = std::ifstream(filePath, std::ios::binary);
+    if (!commitFile.is_open())
+    {
+        throw("fatal: Not a valid object name " + folder + file);
+        return "";
+    }
+    std::vector<char> compressed((std::istreambuf_iterator<char>(commitFile)), {});
+    commitFile.close();
+
+    std::vector<char> decompressed;
+    if (decompressData(compressed, decompressed))
+    {
+        std::string data(decompressed.begin(), decompressed.end());
+        return data;
+    }
+    else
+    {
+        throw("fatal: Not a valid object name " + folder + file);
+    }
+}
+
+void extractHash(std::string hash, std::string flag)
+{
+    std::string fileData = getFileData(hash);
+    int nullDelimiter = fileData.find('\0');
+    std::string header = fileData.substr(0, nullDelimiter);
+    std::string data = fileData.substr(nullDelimiter);
+    if(header.find("tree")==-1)
+    {
+        std::cout<<"Not a tree\n";
+        return;
+    }
+    std::cout<<data<<'\n';
+    std::istringstream iss(data);
+    while(iss)
+    {
+        std::string mode, name;
+        std::getline(iss, mode, ' ');
+        std::getline(iss, name, '\0');
+        if(mode.size()<6)
+        {
+            mode = std::string(6 - mode.size(), '0') + mode;
+        }
+        char sha1Binary[20];
+        iss.read(sha1Binary, 20);
+        if(iss)
+        {
+            std::string hexData = computeHex(reinterpret_cast<unsigned char *> (sha1Binary));
+            std::string objectData = getFileData(hexData);
+            nullDelimiter = objectData.find('\0');
+            header = objectData.substr(0, nullDelimiter);
+            int spaceDelimiter = header.find(' ');
+            std::string type = header.substr(0, spaceDelimiter);
+            if(type=="tree" and flag == "-r")
+            {
+                extractHash(hexData, flag);
+            }
+            else
+            {
+                std::string objectSize = header.substr(spaceDelimiter);
+                printTreeOutput(flag, mode, type, hexData, objectSize, name);
+            }
+        }
+    } 
+ 
+}

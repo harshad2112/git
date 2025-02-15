@@ -1,11 +1,19 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
+#include <sstream>
 #include <vector>
 #include <zlib.h>
 #include <openssl/sha.h>
 
 // This function is generated using chatGPT.
+
+std::string decToOct(uint32_t decimal)
+{
+    std::stringstream st;
+    st << std::oct << decimal;
+    return st.str();
+}
 
 /*
 bool decompressData(std::vector<char>& compressedData, std::vector<char> &decmp) {
@@ -106,6 +114,18 @@ std::string computeSHA(const std::string &input)
         ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
     }
     return ss.str();
+}
+
+std::string hexToBinary(const std::string &input)
+{
+    std::string st;
+    for(size_t i=0; i<input.length(); i+=2)
+    {   
+        unsigned int byte;
+        std::istringstream(input.substr(i, 2)) >> std::hex >> byte;
+        st += static_cast<unsigned char>(byte);
+    }
+    return st;
 }
 
 std::string computeHex(const unsigned char *input)
