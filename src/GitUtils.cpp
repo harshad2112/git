@@ -4,11 +4,29 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <map>
 #include <filesystem>
 
 #include "../include/GitUtils.hpp"
 #include "../include/IndexEntry.hpp"
 #include "../include/Utils.hpp"
+
+using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
+
+std::vector<IndexEntry> getAllFiles(std::string folderPath)
+{
+    std::vector<IndexEntry> currentFiles;
+    for(const auto &dirEntry: recursive_directory_iterator(folderPath))
+    {
+        std::map<std::string, std::string> fileData = getFileStat(dirEntry.path().string());
+        struct IndexEntry currentEntry(fileData);
+        for(auto entry: fileData)
+        {
+            std::cout<<entry.first<<" "<<entry.second<<'\n';
+        }
+        std::cout<<'\n';
+    }
+}
 
 std::string writeObject(std::string type, std::string &data, bool write)
 {

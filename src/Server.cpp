@@ -4,12 +4,13 @@
 #include <string>
 #include <vector>
 
+#include "../include/Add.hpp"
 #include "../include/Init.hpp"
-#include "../include/HashObject.hpp"
-#include "../include/CatFile.hpp"
 #include "../include/LsTree.hpp"
 #include "../include/LsFiles.hpp"
+#include "../include/CatFile.hpp"
 #include "../include/WriteTree.hpp"
+#include "../include/HashObject.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -50,6 +51,10 @@ int main(int argc, char *argv[])
         else if(command == "write-tree")
         {
             writeTree(argc, argv);
+        }
+        else if(command == "add")
+        {
+            add(argc, argv);
         }
         else
         {

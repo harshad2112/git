@@ -1,12 +1,39 @@
+#include <map>
 #include <iostream>
 #include <string>
 #include <filesystem>
 #include <sstream>
 #include <vector>
 #include <zlib.h>
+#include <ctime>
+#include <sys/stat.h>
 #include <openssl/sha.h>
 
-// This function is generated using chatGPT.
+std::string convertTime(time_t t)
+{
+    char buffer[30];
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", std::localtime(&t));
+    return std::string(buffer);
+}
+
+std::map<std::string, std::string> getFileStat(const std::string &filePath)
+{
+    struct stat fileStat;
+    std::map<std::string, std::string> metaData;
+    if(stat(filePath.c_str(), &fileStat) == 0)
+    {
+        metaData["path"] = filePath;
+        metaData["size"] = std::to_string(fileStat.st_size);
+        metaData["mode"] = std::to_string(fileStat.st_mode & 0777);
+        metaData["uid"] = std::to_string(fileStat.st_uid);
+        metaData["gid"] = std::to_string(fileStat.st_gid);
+        metaData["dev"] = std::to_string(fileStat.st_dev);
+        metaData["ino"] = std::to_string(fileStat.st_ino);
+        metaData["mtime"] = convertTime(fileStat.st_mtime);
+        metaData["ctime"] = convertTime(fileStat.st_ctime);
+    }
+    return metaData;
+}
 
 std::string decToOct(uint32_t decimal)
 {
@@ -14,6 +41,8 @@ std::string decToOct(uint32_t decimal)
     st << std::oct << decimal;
     return st.str();
 }
+
+// This function is generated using chatGPT.
 
 /*
 bool decompressData(std::vector<char>& compressedData, std::vector<char> &decmp) {
