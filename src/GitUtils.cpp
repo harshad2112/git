@@ -161,7 +161,6 @@ void extractHash(std::string hash, std::string flag)
         std::cout<<"Not a tree\n";
         return;
     }
-    std::cout<<data<<'\n';
     std::istringstream iss(data);
     while(iss)
     {

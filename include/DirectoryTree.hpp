@@ -17,7 +17,7 @@ class DirectoryTree
     void createDirTree(DirectoryTree* root, std::vector<IndexEntry> entries);
     void createSHA(DirectoryTree* root);
 public:
-    DirectoryTree(std::string name, std::string type);
+    DirectoryTree(const std::string &name, const std::string &type, const std::string &mode, const std::string &sha);
     DirectoryTree(std::vector<IndexEntry> entries);
     std::string getName();
     std::string getFilePath();
