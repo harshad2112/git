@@ -14,7 +14,8 @@ bool sortOnFileName(DirectoryTree *a, DirectoryTree *b)
     return a->getName() < b->getName();
 } 
 
-DirectoryTree::DirectoryTree(std::string name, std::string type): name(name), type(type) {}
+DirectoryTree::DirectoryTree(const std::string &name, const std::string &type, const std::string &mode, const std::string &sha)
+    : name(name), type(type), mode(mode), sha(sha) {}
 
 DirectoryTree::DirectoryTree(std::vector<IndexEntry> entries)
 {
@@ -83,8 +84,7 @@ void DirectoryTree::createDirTree(DirectoryTree* root, std::vector<IndexEntry> e
             std::string folderName = entry.path.substr(0, pos);
             if(!trees.count(folderName))
             {
-                DirectoryTree* currTree = new DirectoryTree(folderName, "tree");
-                currTree->setMode("040000");
+                DirectoryTree* currTree = new DirectoryTree(folderName, "tree", "040000", entry.sha1);
                 currTree->setFilePath(root->getFilePath() + '/' + folderName);
                 trees[folderName] = currTree;
                 dirTree.push_back(currTree);
@@ -95,8 +95,7 @@ void DirectoryTree::createDirTree(DirectoryTree* root, std::vector<IndexEntry> e
         }
         else
         {
-            DirectoryTree* currTree = new DirectoryTree(entry.path, "blob");
-            currTree->setMode(decToOct(entry.mode));
+            DirectoryTree* currTree = new DirectoryTree(entry.path, "blob", decToOct(entry.mode), entry.sha1);
             currTree->setFilePath(root->getFilePath());
             dirTree.push_back(currTree);
             root->child.push_back(currTree);
@@ -121,20 +120,6 @@ void DirectoryTree::createSHA(DirectoryTree* root)
         std::string fileName = child->getName();
         std::string filePath = child->getFilePath();
         std::string mode = child->getMode();
-        if(child->getType()=="blob")
-        {
-            auto file = std::ifstream(filePath + '/' + fileName);
-            if(!file.is_open())
-            {
-                throw("fatal: not a valid object name " + filePath);
-            }         
-            std::vector<char> decompressed((std::istreambuf_iterator<char>(file)), {});
-            file.close();
-        
-            std::string fileData(decompressed.begin(), decompressed.end());
-            std::string fileType = "blob";
-            child->setSHA(writeObject(fileType, fileData, true));
-        }
         if(mode.find('0') == 0)
             mode = mode.substr(1);
         data += mode + ' ' + fileName + '\0' + hexToBinary(child->getSHA()); 
