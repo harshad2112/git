@@ -13,19 +13,45 @@
 
 using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
+std::vector<std::string> getGitIgnoreFiles(std::string folderPath)
+{
+    std::filesystem::path gitIgnoreFilePath = folderPath + "/.gitignore";
+    std::ifstream file(gitIgnoreFilePath, std::ios::binary);
+    if(!file.is_open())
+    {
+        throw std::runtime_error("fatal: unable to open index file");
+    }
+    std::vector<std::string> gitIgnoreFiles;
+    std::string filename;
+    while(getline(file, filename))
+    {
+        gitIgnoreFiles.push_back(folderPath + "/" + filename);
+    }
+    return gitIgnoreFiles;
+}
+
 std::vector<IndexEntry> getAllFiles(std::string folderPath)
 {
     std::vector<IndexEntry> currentFiles;
+    std::vector<std::string> gitIgnoreFiles = getGitIgnoreFiles(folderPath);
     for(const auto &dirEntry: recursive_directory_iterator(folderPath))
     {
-        std::map<std::string, std::string> fileData = getFileStat(dirEntry.path().string());
-        struct IndexEntry currentEntry(fileData);
-        for(auto entry: fileData)
+        bool skip = false;
+        for(auto gitIgnorePath: gitIgnoreFiles)
         {
-            std::cout<<entry.first<<" "<<entry.second<<'\n';
+            if(dirEntry.path().string().find(gitIgnorePath)==0)
+            {
+                skip = true;
+            }
         }
-        std::cout<<'\n';
+        if(!skip)
+        {
+            std::map<std::string, std::string> fileData = getFileStat(dirEntry.path().string());
+            struct IndexEntry currentEntry(fileData);
+            currentFiles.push_back(currentEntry);
+        }
     }
+    return currentFiles;
 }
 
 std::string writeObject(std::string type, std::string &data, bool write)

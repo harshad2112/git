@@ -29,8 +29,8 @@ std::map<std::string, std::string> getFileStat(const std::string &filePath)
         metaData["gid"] = std::to_string(fileStat.st_gid);
         metaData["dev"] = std::to_string(fileStat.st_dev);
         metaData["ino"] = std::to_string(fileStat.st_ino);
-        metaData["mtime"] = convertTime(fileStat.st_mtime);
-        metaData["ctime"] = convertTime(fileStat.st_ctime);
+        metaData["mtime"] = std::to_string(fileStat.st_mtime);
+        metaData["ctime"] = std::to_string(fileStat.st_ctime);
     }
     return metaData;
 }

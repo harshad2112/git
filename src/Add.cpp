@@ -15,7 +15,9 @@ bool add(int argc, char* argv[])
     std::string currentFolderPath = currentFolder.string();
     std::vector<IndexEntry> currentFiles = readGitIndex(indexPath);  
     std::vector<IndexEntry> dirFiles = getAllFiles(currentFolderPath);
-    
+    for(auto dirFile: dirFiles)
+    {
+    }
 }   
 
 
