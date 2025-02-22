@@ -103,6 +103,7 @@ std::vector<IndexEntry> getAllFiles(std::string folderPath)
             if(fileData["mode"] == "16877") continue;
             struct IndexEntry currentEntry(fileData);
             currentEntry.path.erase(currentEntry.path.begin(), currentEntry.path.begin() + folderPath.size() + 1);
+            currentEntry.flag = currentEntry.path.size();
             currentFiles.push_back(currentEntry);
         }
     }
@@ -200,6 +201,7 @@ std::vector<IndexEntry> readGitIndex(const std::string &indexPath)
         entry.flag = ntohs(entry.flag);
         
         getline(indexFile, entry.path, '\0');
+        std::cout<<entry.path<<" "<<entry.flag<<'\n';
         
         int padding = (8 - ((62 + entry.path.size() + 1) %8 )) %8;
         indexFile.seekg(padding, std::ios::cur);
