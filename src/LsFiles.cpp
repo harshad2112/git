@@ -26,7 +26,7 @@ bool lsFiles(int argc, char* agrv[])
     
     for(auto entry: entries)
     {
-        std::cout<<entry.path<<'\n';
+        std::cout<<entry.sha1<<" "<<entry.mode<<" "<<entry.path<<'\n';
     }
     
     return 0;

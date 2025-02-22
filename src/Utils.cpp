@@ -16,6 +16,13 @@ std::string convertTime(time_t t)
     return std::string(buffer);
 }
 
+std::string decToOct(uint32_t decimal)
+{
+    std::stringstream st;
+    st << std::oct << decimal;
+    return st.str();
+}
+
 std::map<std::string, std::string> getFileStat(const std::string &filePath)
 {
     struct stat fileStat;
@@ -24,7 +31,7 @@ std::map<std::string, std::string> getFileStat(const std::string &filePath)
     {
         metaData["path"] = filePath;
         metaData["size"] = std::to_string(fileStat.st_size);
-        metaData["mode"] = std::to_string(fileStat.st_mode & 0777);
+        metaData["mode"] = std::to_string(fileStat.st_mode);
         metaData["uid"] = std::to_string(fileStat.st_uid);
         metaData["gid"] = std::to_string(fileStat.st_gid);
         metaData["dev"] = std::to_string(fileStat.st_dev);
@@ -33,13 +40,6 @@ std::map<std::string, std::string> getFileStat(const std::string &filePath)
         metaData["ctime"] = std::to_string(fileStat.st_ctime);
     }
     return metaData;
-}
-
-std::string decToOct(uint32_t decimal)
-{
-    std::stringstream st;
-    st << std::oct << decimal;
-    return st.str();
 }
 
 // This function is generated using chatGPT.

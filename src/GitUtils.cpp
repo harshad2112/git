@@ -13,6 +13,59 @@
 
 using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
+bool sortByFileName(IndexEntry &a, IndexEntry &b)
+{
+    return a.path < b.path;
+} 
+
+void appendBigEndian(std::string &buffer, uint32_t value)
+{
+    uint32_t bigEndianVal = htonl(value);
+    buffer.append(reinterpret_cast<const char*> (&bigEndianVal), sizeof(bigEndianVal));
+}
+
+void writeGitIndex(std::vector<IndexEntry> currentFiles, std::string folderPath)
+{
+    sort(currentFiles.begin(), currentFiles.end(), sortByFileName);
+    std::filesystem::path indexPath = folderPath + "/.git/index";
+    std::ofstream indexFile(indexPath, std::ios::binary);
+    if(!indexFile.is_open())
+    {
+        throw std::runtime_error("fatal: unable to open index file");
+    }        
+    std::string indexData;
+    std::string signature = "DIRC";
+    uint32_t version = 3, entryCount = currentFiles.size();
+    
+    indexData.append("DIRC", 4);
+    appendBigEndian(indexData, version);
+    appendBigEndian(indexData, entryCount);
+    for(auto entry: currentFiles)
+    {
+        appendBigEndian(indexData, entry.ctimeSec);
+        appendBigEndian(indexData, entry.ctimeMSec);
+        appendBigEndian(indexData, entry.mtimeSec);
+        appendBigEndian(indexData, entry.mtimeMSec);
+        appendBigEndian(indexData, entry.dev);
+        appendBigEndian(indexData, entry.ino);
+        appendBigEndian(indexData, entry.mode);
+        appendBigEndian(indexData, entry.uid);
+        appendBigEndian(indexData, entry.gid);
+        appendBigEndian(indexData, entry.size);
+        std::string binSha = hexToBinary(entry.sha1);
+        indexData.append(reinterpret_cast<const char*> (binSha.c_str()), 20);
+        uint16_t flagEndian = htons(entry.flag);
+        indexData.append(reinterpret_cast<const char*> (&flagEndian), sizeof(flagEndian));
+        indexData.append(reinterpret_cast<const char*> (entry.path.c_str()), entry.path.size());
+        indexData += '\0';
+        
+        int padding = (8 - ((62 + entry.path.size() + 1) %8 )) %8;
+        indexData += std::string(padding, 0);
+    }
+    indexFile << indexData;
+    indexFile.close();
+}
+
 std::vector<std::string> getGitIgnoreFiles(std::string folderPath)
 {
     std::filesystem::path gitIgnoreFilePath = folderPath + "/.gitignore";
@@ -47,7 +100,9 @@ std::vector<IndexEntry> getAllFiles(std::string folderPath)
         if(!skip)
         {
             std::map<std::string, std::string> fileData = getFileStat(dirEntry.path().string());
+            if(fileData["mode"] == "16877") continue;
             struct IndexEntry currentEntry(fileData);
+            currentEntry.path.erase(currentEntry.path.begin(), currentEntry.path.begin() + folderPath.size() + 1);
             currentFiles.push_back(currentEntry);
         }
     }
@@ -142,7 +197,7 @@ std::vector<IndexEntry> readGitIndex(const std::string &indexPath)
         indexFile.read(reinterpret_cast<char*>(sha1), 20);
         entry.sha1 = computeHex(sha1);
         indexFile.read(reinterpret_cast<char*>(&entry.flag), 2); 
-        entry.flag = ntohl(entry.flag);
+        entry.flag = ntohs(entry.flag);
         
         getline(indexFile, entry.path, '\0');
         

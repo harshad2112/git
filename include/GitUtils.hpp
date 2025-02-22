@@ -5,6 +5,8 @@
 
 #include "IndexEntry.hpp"
 
+void writeGitIndex(std::vector<IndexEntry> currentFiles, std::string folderPath);
+
 std::vector<IndexEntry> getAllFiles(std::string folderPath);
 
 std::string writeObject(std::string type, std::string &data, bool write);
