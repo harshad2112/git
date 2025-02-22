@@ -6,16 +6,16 @@ This project is a minimal implementation of Git in C++, replicating core Git fun
 
 The current implementation supports the following Git commands:
 
-- `` – Initializes a new Git repository.
-- `` – Displays the content of a Git object.
-- `` – Computes the SHA-1 hash of a file.
-- `` – Computes the SHA-1 hash and writes the object to the `.git/objects` directory.
-- `` – Lists the contents of a tree object.
-- `` – Recursively lists the contents of a tree object.
-- `` – Lists tree contents with object size.
-- `` – Shows the tracked files in the index.
-- `` – Converts the index into a tree object.
-- `` – Adds files to the index.
+- `git init` – Initializes a new Git repository.
+- `git cat-file -p <object>` – Displays the content of a Git object.
+- `git hash-object <file>` – Computes the SHA-1 hash of a file.
+- `git hash-object -w <file>` – Computes the SHA-1 hash and writes the object to the `.git/objects` directory.
+- `git ls-tree <tree>` – Lists the contents of a tree object.
+- `git ls-tree -r <tree>` – Recursively lists the contents of a tree object.
+- `git ls-tree -l <tree>` – Lists tree contents with object size.
+- `git ls-files` – Shows the tracked files in the index.
+- `git write-tree` – Converts the index into a tree object.
+- `git add .` – Adds files to the index.
 
 ## Installation
 
