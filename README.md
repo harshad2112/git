@@ -20,5 +20,5 @@ Git-cpp currently supports these commands:
 - `./git ls-tree` -> shows all the file present in that commit id.
 - `./git ls-files` -> 
 - `./git write-tree` -> 
-- `./git add .` -> not working properly, it is able to add the file names to index file, but somehow, something is missing and hence git is not able to read the index file after git add.
+- `./git add .` -> This commmands adds all the modified/created files to index.
   
