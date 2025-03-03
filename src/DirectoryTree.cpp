@@ -4,10 +4,10 @@
 #include <map>
 #include <vector>
 
-#include "../include/DirectoryTree.hpp"
-#include "../include/GitUtils.hpp"
-#include "../include/Utils.hpp"
-#include "../include/IndexEntry.hpp"
+#include "DirectoryTree.hpp"
+#include "GitUtils.hpp"
+#include "Utils.hpp"
+#include "IndexEntry.hpp"
 
 bool sortOnFileName(DirectoryTree *a, DirectoryTree *b)
 {

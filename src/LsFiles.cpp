@@ -3,8 +3,8 @@
 #include <string>
 #include <iostream>
 
-#include "../include/LsFiles.hpp"
-#include "../include/GitUtils.hpp"
+#include "LsFiles.hpp"
+#include "GitUtils.hpp"
 
 void printLsFiles(int argc, char* argv[], std::vector<IndexEntry> &entries)
 {

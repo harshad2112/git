@@ -4,9 +4,9 @@
 #include <iostream>
 #include <filesystem>
 
-#include "../include/Add.hpp"
-#include "../include/IndexEntry.hpp"
-#include "../include/GitUtils.hpp"
+#include "Add.hpp"
+#include "IndexEntry.hpp"
+#include "GitUtils.hpp"
 
 bool add(int argc, char* argv[])
 {

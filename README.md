@@ -85,6 +85,7 @@ Retrieve an object’s content:
 
 - Implement `git commit`
 - Implement `git checkout`
+- Implement `git clone`
 - Optimize object storage
 - Add unit tests
 

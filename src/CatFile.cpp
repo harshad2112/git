@@ -5,9 +5,9 @@
 #include <fstream>
 #include <vector>
 
-#include "../include/CatFile.hpp"
-#include "../include/Utils.hpp"
-#include "../include/GitUtils.hpp"
+#include "CatFile.hpp"
+#include "Utils.hpp"
+#include "GitUtils.hpp"
 
 bool catFile(int argc, char *argv[])
 {

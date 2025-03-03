@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "../include/HashObject.hpp"
-#include "../include/Utils.hpp"
+#include "HashObject.hpp"
+#include "Utils.hpp"
 
 bool hashObject(int argc, char *argv[])
 {

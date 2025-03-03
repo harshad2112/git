@@ -3,9 +3,9 @@
 #include <vector>
 #include <string>
 
-#include "../include/WriteTree.hpp"
-#include "../include/GitUtils.hpp"
-#include "../include/DirectoryTree.hpp"
+#include "WriteTree.hpp"
+#include "GitUtils.hpp"
+#include "DirectoryTree.hpp"
 
 bool writeTree(int argc, char* argv[])
 {

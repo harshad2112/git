@@ -7,16 +7,16 @@
 #include <map>
 #include <filesystem>
 
-#include "../include/GitUtils.hpp"
-#include "../include/IndexEntry.hpp"
-#include "../include/Utils.hpp"
+#include "GitUtils.hpp"
+#include "IndexEntry.hpp"
+#include "Utils.hpp"
 
 using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
 bool sortByFileName(IndexEntry &a, IndexEntry &b)
 {
     return a.path < b.path;
-} 
+}
 
 void appendBigEndian(std::string &buffer, uint32_t value)
 {
@@ -32,11 +32,11 @@ void writeGitIndex(std::vector<IndexEntry> currentFiles, std::string folderPath)
     if(!indexFile.is_open())
     {
         throw std::runtime_error("fatal: unable to open index file");
-    }        
+    }
     std::string indexData;
     std::string signature = "DIRC";
     uint32_t version = 3, entryCount = currentFiles.size();
-    
+
     indexData.append("DIRC", 4);
     appendBigEndian(indexData, version);
     appendBigEndian(indexData, entryCount);
@@ -58,7 +58,7 @@ void writeGitIndex(std::vector<IndexEntry> currentFiles, std::string folderPath)
         indexData.append(reinterpret_cast<const char*> (&flagEndian), sizeof(flagEndian));
         indexData.append(reinterpret_cast<const char*> (entry.path.c_str()), entry.path.size());
         indexData += '\0';
-        
+
         int padding = (8 - ((62 + entry.path.size() + 1) %8 )) %8;
         indexData += std::string(padding, 0);
     }
@@ -154,62 +154,61 @@ std::vector<IndexEntry> readGitIndex(const std::string &indexPath)
     if(!indexFile.is_open())
     {
         throw std::runtime_error("fatal: unable to open index file");
-    }        
+    }
     char signature[4];
     indexFile.read(signature, 4);
     if(std::strncmp(signature, "DIRC", 4) != 0)
     {
         throw std::runtime_error("fatal: Invalid git index file");
     }
-    
+
     uint32_t version, entryCount;
     indexFile.read(reinterpret_cast<char*>(&version), 4);
     version = ntohl(version);
 
     indexFile.read(reinterpret_cast<char*>(&entryCount), 4);
     entryCount = ntohl(entryCount);
-    
+
     std::vector<IndexEntry> indexEntries;
     for(uint32_t i=0; i<entryCount; i++)
     {
         IndexEntry entry;
-        indexFile.read(reinterpret_cast<char*>(&entry.ctimeSec), 4); 
+        indexFile.read(reinterpret_cast<char*>(&entry.ctimeSec), 4);
         entry.ctimeSec = ntohl(entry.ctimeSec);
-        indexFile.read(reinterpret_cast<char*>(&entry.ctimeMSec), 4); 
+        indexFile.read(reinterpret_cast<char*>(&entry.ctimeMSec), 4);
         entry.ctimeMSec = ntohl(entry.ctimeMSec);
-        indexFile.read(reinterpret_cast<char*>(&entry.mtimeSec), 4); 
+        indexFile.read(reinterpret_cast<char*>(&entry.mtimeSec), 4);
         entry.mtimeSec = ntohl(entry.mtimeSec);
-        indexFile.read(reinterpret_cast<char*>(&entry.mtimeMSec), 4); 
+        indexFile.read(reinterpret_cast<char*>(&entry.mtimeMSec), 4);
         entry.mtimeMSec = ntohl(entry.mtimeMSec);
-        indexFile.read(reinterpret_cast<char*>(&entry.dev), 4); 
+        indexFile.read(reinterpret_cast<char*>(&entry.dev), 4);
         entry.dev = ntohl(entry.dev);
-        indexFile.read(reinterpret_cast<char*>(&entry.ino), 4); 
+        indexFile.read(reinterpret_cast<char*>(&entry.ino), 4);
         entry.ino = ntohl(entry.ino);
-        indexFile.read(reinterpret_cast<char*>(&entry.mode), 4); 
+        indexFile.read(reinterpret_cast<char*>(&entry.mode), 4);
         entry.mode = ntohl(entry.mode);
-        indexFile.read(reinterpret_cast<char*>(&entry.uid), 4); 
+        indexFile.read(reinterpret_cast<char*>(&entry.uid), 4);
         entry.uid = ntohl(entry.uid);
-        indexFile.read(reinterpret_cast<char*>(&entry.gid), 4); 
+        indexFile.read(reinterpret_cast<char*>(&entry.gid), 4);
         entry.gid = ntohl(entry.gid);
-        indexFile.read(reinterpret_cast<char*>(&entry.size), 4); 
+        indexFile.read(reinterpret_cast<char*>(&entry.size), 4);
         entry.size = ntohl(entry.size);
-        
+
         unsigned char sha1[20];
         indexFile.read(reinterpret_cast<char*>(sha1), 20);
         entry.sha1 = computeHex(sha1);
-        indexFile.read(reinterpret_cast<char*>(&entry.flag), 2); 
+        indexFile.read(reinterpret_cast<char*>(&entry.flag), 2);
         entry.flag = ntohs(entry.flag);
-        
+
         getline(indexFile, entry.path, '\0');
-        std::cout<<entry.path<<" "<<entry.flag<<'\n';
-        
+
         int padding = (8 - ((62 + entry.path.size() + 1) %8 )) %8;
         indexFile.seekg(padding, std::ios::cur);
-        
+
         indexEntries.push_back(entry);
     }
     return indexEntries;
-} 
+}
 
 void printTreeOutput(std::string &flag, std::string &mode, std::string &type, std::string &data, std::string &siz, std::string &name)
 {
@@ -220,7 +219,7 @@ void printTreeOutput(std::string &flag, std::string &mode, std::string &type, st
     else if(flag == "-l")
     {
         siz = std::string(58 - (siz.size() + mode.size() + type.size() + data.size()), ' ') + siz;
-        std::cout<<mode<<" "<<type<<" "<<data<<" "<<siz<<"    "<<name<<"\n"; 
+        std::cout<<mode<<" "<<type<<" "<<data<<" "<<siz<<"    "<<name<<"\n";
     }
 }
 
@@ -292,6 +291,6 @@ void extractHash(std::string hash, std::string flag)
                 printTreeOutput(flag, mode, type, hexData, objectSize, name);
             }
         }
-    } 
- 
+    }
+
 }

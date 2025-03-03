@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "../include/Init.hpp"
+#include "Init.hpp"
 
 bool initializeGit(int argc, char *argv[])
 {

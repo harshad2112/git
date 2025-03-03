@@ -1,8 +1,8 @@
 #include <string>
 #include <iostream>
 
-#include "../include/LsTree.hpp"
-#include "../include/GitUtils.hpp"
+#include "LsTree.hpp"
+#include "GitUtils.hpp"
 
 bool lsTree(int argc, char* argv[])
 {

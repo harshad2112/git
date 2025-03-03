@@ -4,13 +4,13 @@
 #include <string>
 #include <vector>
 
-#include "../include/Add.hpp"
-#include "../include/Init.hpp"
-#include "../include/LsTree.hpp"
-#include "../include/LsFiles.hpp"
-#include "../include/CatFile.hpp"
-#include "../include/WriteTree.hpp"
-#include "../include/HashObject.hpp"
+#include "Add.hpp"
+#include "Init.hpp"
+#include "LsTree.hpp"
+#include "LsFiles.hpp"
+#include "CatFile.hpp"
+#include "WriteTree.hpp"
+#include "HashObject.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -19,15 +19,15 @@ int main(int argc, char *argv[])
     {
         std::cout << std::unitbuf;
         std::cerr << std::unitbuf;
-    
+
         if (argc < 2)
         {
             std::cerr << "No command provided.\n";
             return EXIT_FAILURE;
         }
-    
+
         std::string command = argv[1];
-    
+
         if (command == "init")
         {
             initializeGit(argc, argv);
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
         else if(command == "ls-tree")
         {
     	    lsTree(argc, argv);
-        } 
+        }
         else if(command == "ls-files")
         {
             lsFiles(argc, argv);
@@ -61,9 +61,9 @@ int main(int argc, char *argv[])
             std::cerr << "Unknown command " << command << '\n';
             return EXIT_FAILURE;
         }
-    
+
         return EXIT_SUCCESS;
-    } 
+    }
     catch(const std::exception &err)
     {
         std::cerr<<err.what()<<'\n';
