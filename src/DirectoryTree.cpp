@@ -12,12 +12,12 @@
 bool sortOnFileName(DirectoryTree *a, DirectoryTree *b)
 {
     return a->getName() < b->getName();
-} 
+}
 
 DirectoryTree::DirectoryTree(const std::string &name, const std::string &type, const std::string &mode, const std::string &sha)
     : name(name), type(type), mode(mode), sha(sha) {}
 
-DirectoryTree::DirectoryTree(std::vector<IndexEntry> entries)
+DirectoryTree::DirectoryTree(const std::vector<IndexEntry> &entries)
 {
     this->name = "root";
     this->type = "tree";
@@ -71,7 +71,7 @@ void DirectoryTree::setMode(std::string mod)
     mode = mod;
 }
 
-void DirectoryTree::createDirTree(DirectoryTree* root, std::vector<IndexEntry> entries)
+void DirectoryTree::createDirTree(DirectoryTree* root, const std::vector<IndexEntry> &entries)
 {
     std::map<std::string, DirectoryTree*> trees;
     std::map<std::string, std::vector<IndexEntry>> subTree;
@@ -103,7 +103,7 @@ void DirectoryTree::createDirTree(DirectoryTree* root, std::vector<IndexEntry> e
     }
     for(auto tree: trees)
     {
-        
+
         createDirTree(tree.second, subTree[tree.first]);
         root->child.push_back(tree.second);
     }
@@ -122,7 +122,7 @@ void DirectoryTree::createSHA(DirectoryTree* root)
         std::string mode = child->getMode();
         if(mode.find('0') == 0)
             mode = mode.substr(1);
-        data += mode + ' ' + fileName + '\0' + hexToBinary(child->getSHA()); 
+        data += mode + ' ' + fileName + '\0' + hexToBinary(child->getSHA());
     }
     root->setSHA(writeObject(type, data, true));
 }
